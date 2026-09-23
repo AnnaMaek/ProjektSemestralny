@@ -176,6 +176,6 @@ print(f"Liczba zgłoszeń dotycząca lixisenatide: {len(lixisenatide)}")
 
 print("\n --- FILTROWANIE WEDŁUG POWAŻNOŚCI ZGŁOSZONEGO DZIAŁANIA NIEPOŻĄDANEGO --- ")
 
-serious = df[df["serious"] == "True"]
+serious = df[df["serious"] == True]
 print(f"\nLiczba działań niepożądanych określonych jako poważne to: {len(serious)}")
 
