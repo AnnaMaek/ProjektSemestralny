@@ -112,11 +112,11 @@ df.loc[df["patient_weight_kg"] < 30, "patient_weight_kg"] = pd.NA
 df.loc[df["patient_weight_kg"] > 500, "patient_weight_kg"] = pd.NA
 
 # Czyszczenie niepoprawne podanego wieku pacjenta.
-# Analizowane leki mogą być stosowane u pacjentów powyżej 12 r.ż.
+# Na potrzeby analizy przyjmujemy 12 lat jako dolną granicę wieku.
 
 bledny_wiek = (df["patient_age"] < 12).sum()
 
-print(f"Liczba pacjntów z błędnie podanym wiekiem: {bledny_wiek}")
+print(f"Liczba pacjentów z błędnie podanym wiekiem: {bledny_wiek}")
 df.loc[df["patient_age"] < 12, "patient_age"] = pd.NA
 
 
@@ -151,15 +151,15 @@ print(f"\nIlość zgłoszonych działań niepożadanych: {ilosc_zgloszonych_dzia
 
 print("\n---FILTROWANIE WEDŁUG WIEKU ----")
 
-age_under_18 = df_unique[df_unique["age_years"] < 18]
+age_12_17 = df_unique[(df_unique["age_years"] >= 12) & (df_unique["age_years"] < 18)]
 age_18_65 = df_unique[(df_unique["age_years"] >= 18) & (df_unique["age_years"] <= 65)]
 age_over_65 = df_unique[df_unique["age_years"] > 65]
 age_unknown = df_unique[df_unique["age_years"].isna()]
 
-print(f"\nLiczba zgłoszeń pacjentów poniżej 18 r.ż.: {len(age_under_18)}")
+print(f"\nLiczba zgłoszeń pacjentów w wieku 12-17 lat: {len(age_12_17)}")
 print(f"\nLiczba zgłoszeń pacjentów w wieku 18-65 lat: {len(age_18_65)}")
 print(f"\nLiczba zgłoszeń pacjentów w wieku powyżej 65 lat: {len(age_over_65)}")
-print(f"\nLiczba zgłoszeń pacjentów których wiek nie został podany: {len(age_unknown)} ")
+print(f"\nLiczba zgłoszeń pacjentów, których wiek nie został podany: {len(age_unknown)} ")
 
 # 13. Filtrowanie według płci.
 
