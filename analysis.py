@@ -234,7 +234,7 @@ print(grupa_patient_sex)
 
 # 19. Grupowanie zgłoszeń według wieku.
 
-print("\n------GRUPOWANIE ZGŁOSZEŃ WEDŁUG GRUP WIEKOWYCH ------")
+print("\n------PODZIAŁ ZGŁOSZEŃ WEDŁUG GRUP WIEKOWYCH ------")
 
 df_unique["age_group"] = "Unknown"
 df_unique.loc[(df_unique["age_years"] >= 12) & (df_unique["age_years"] < 18), "age_group"] = "12-17"
@@ -257,3 +257,37 @@ print("\n----NAJCZĘSCIEJ WYSTĘPUJĄCE DZIAŁANIA NIEPOŻĄDANE ---- ")
 
 grupa_reaction = df.groupby("reaction").size().sort_values(ascending=False)
 print(grupa_reaction.head(30))
+
+# ---------------PORÓWNANIE GRUP -------------------------
+
+# 22. Porównanie wieku kobiet i mężczyzn.
+
+print("\n ---- PORÓWNANIE WIEKU KOBIET I MĘŻCZYZN ---- ")
+
+female_age = female["age_years"]
+male_age = male["age_years"]
+
+print(f"\nŚredni wiek kobiet: {female_age.mean():.2f} lat ")
+print(f"\nŚredni wiek mężczyzn: {male_age.mean():.2f} lat ")
+print(f"\nMediana wieku kobiet: {female_age.median():.2f} lat ")
+print(f"\nMediana wieku mężczyzn: {male_age.median():.2f} lat ")
+
+# 23. Porównanie liczby zgłoszeń pochodzących od kobiet i mężczyzn.
+
+print("\n --- PORÓWNANIE LICZBY ZGŁOSZEŃ POCHODZĄCYCH OD KOBIET I MĘŻCZYZN ---- ")
+
+print(f"\nLiczba kobiet która zgłosiłą wystąpienie działań niepożądanych: {len(female)}.")
+print(f"\nLiczba mężczyzn którzy zgłosili wystąpienie działań niepożądanych: {len(male)}.")
+
+# 24. Najczęstsze działania niepożądane w zależnosci od płci.
+
+print("\n ---- WYSTĘPOWANIE DZIAŁAŃ NIEPOŻĄDANYCH W ZALEŻNOSCI OD PŁCI ---- ")
+
+female_reaction = df[df["patient_sex"] == "Female"]["reaction"].value_counts()
+print("\nNajczęściej występujące działania niepożądane u kobiet: ")
+print(female_reaction.head(20))
+
+male_reaction = df[df["patient_sex"] == "Male"]["reaction"].value_counts()
+print("\nNajczęsciej występujące działania niepożądane u mężczyzn: ")
+print(male_reaction.head(20))
+
