@@ -222,3 +222,38 @@ print(f"Mediana masy ciała: {df_unique['patient_weight_kg'].median():.2f}")
 print(f"Minimalna masa ciała: {df_unique['patient_weight_kg'].min():.2f}")
 print(f"Maksymalna masa ciała: {df_unique['patient_weight_kg'].max():.2f}")
 
+
+# ---------------- GRUPOWANIE DANYCH --------------------
+
+# 18. Grupowanie zgłoszeń według płci.
+
+print("\n----GRUPOWANIE ZGŁOSZEŃ WEDŁUG PŁCI ------- ")
+
+grupa_patient_sex = df_unique.groupby("patient_sex").size()
+print(grupa_patient_sex)
+
+# 19. Grupowanie zgłoszeń według wieku.
+
+print("\n------GRUPOWANIE ZGŁOSZEŃ WEDŁUG GRUP WIEKOWYCH ------")
+
+df_unique["age_group"] = "Unknown"
+df_unique.loc[(df_unique["age_years"] >= 12) & (df_unique["age_years"] < 18), "age_group"] = "12-17"
+df_unique.loc[(df_unique["age_years"] >= 18) & (df_unique["age_years"] <= 65), "age_group"] = "18-65"
+df_unique.loc[df_unique["age_years"] > 65, "age_group"] = "66+"
+
+grupa_wiek = df_unique["age_group"].value_counts()
+print(grupa_wiek)
+
+# 20. Grupowanie zgłoszeń według substancji czynnej.
+
+print("\n -----GRUPOWANIE ZGŁOSZEŃ WEDŁUG SUBSTANCJI CZYNNEJ ---- ")
+
+grupa_subst = df_unique.groupby("generic_name").size().sort_values(ascending=False)
+print(grupa_subst)
+
+# 21. Grupowanie działań niepożadanych.
+
+print("\n----NAJCZĘSCIEJ WYSTĘPUJĄCE DZIAŁANIA NIEPOŻĄDANE ---- ")
+
+grupa_reaction = df.groupby("reaction").size().sort_values(ascending=False)
+print(grupa_reaction.head(30))
