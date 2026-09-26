@@ -1,4 +1,6 @@
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sn
 
 print("\n ---- ANALIZA DZIAŁAŃ NIEPOŻĄDANYCH LEKÓW Z GRUPY GLP-1 ---- ")
 
@@ -291,3 +293,14 @@ male_reaction = df[df["patient_sex"] == "Male"]["reaction"].value_counts()
 print("\nNajczęsciej występujące działania niepożądane u mężczyzn: ")
 print(male_reaction.head(20))
 
+#---------------------------- WIZUALIZACJE ------------------------------
+
+# 25. Rozkład wieku pacjentów.
+
+print("\n---- WIZUALIZACJA: ROZKŁAD WIEKU PACJENTÓW ----- ")
+
+df_unique["age_years"].plot(kind="hist", bins=20, edgecolor="black", rwidth = 0.8)
+plt.title("Rozkład wieku pacjentów.")
+plt.xlabel("Wiek [lata]")
+plt.ylabel("Ilość zgłoszeń")
+plt.show()
