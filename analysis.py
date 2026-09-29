@@ -104,7 +104,7 @@ rekordy_po2 = len(df)
 print(f"\nIlość rekordów bez nazwy substancji czynnej, które zostały usunięte: {rekordy_przed2 - rekordy_po2}")
 
 # Czyszczenie nieprawidłowych wartości masy ciała.
-# Wartości takie jak 1,7 kg, 9 kg czy 87 075 kg są eweidentym błędem przy pacjencie powyżej 12 r.ż.
+# Wartości takie jak 1,7 kg, 9 kg czy 87 075 kg są ewidentnym błędem przy pacjencie powyżej 12 r.ż.
 
 bledna_waga1 = (df["patient_weight_kg"] < 30).sum()
 bledna_waga2 = (df["patient_weight_kg"] > 500).sum()
@@ -113,7 +113,7 @@ print(f"Liczba nieprawidłowych wartości masy ciała: {bledna_waga1 + bledna_wa
 df.loc[df["patient_weight_kg"] < 30, "patient_weight_kg"] = pd.NA
 df.loc[df["patient_weight_kg"] > 500, "patient_weight_kg"] = pd.NA
 
-# Czyszczenie niepoprawne podanego wieku pacjenta.
+# Czyszczenie niepoprawnie podanego wieku pacjenta.
 # Na potrzeby analizy przyjmujemy 12 lat jako dolną granicę wieku.
 
 bledny_wiek = (df["patient_age"] < 12).sum()
@@ -278,7 +278,7 @@ print(f"\nMediana wieku mężczyzn: {male_age.median():.2f} lat ")
 
 print("\n --- PORÓWNANIE LICZBY ZGŁOSZEŃ POCHODZĄCYCH OD KOBIET I MĘŻCZYZN ---- ")
 
-print(f"\nLiczba kobiet która zgłosiłą wystąpienie działań niepożądanych: {len(female)}.")
+print(f"\nLiczba kobiet która zgłosiła wystąpienie działań niepożądanych: {len(female)}.")
 print(f"\nLiczba mężczyzn którzy zgłosili wystąpienie działań niepożądanych: {len(male)}.")
 
 # 24. Najczęstsze działania niepożądane w zależnosci od płci.

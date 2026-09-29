@@ -2,54 +2,102 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 def plot_age_histogram(df_unique):
-    plt.figure(figsize=(8, 6))
-    df_unique["age_years"].plot(kind="hist", bins=20, edgecolor="black")
-    plt.title("Rozkład wieku pacjentów")
-    plt.xlabel("Wiek [lata]")
-    plt.ylabel("Ilość zgłoszeń")
+    fig, ax = plt.subplots(figsize=(8, 6))
 
-    plt.show()
+    df_unique["age_years"].dropna().plot(
+        kind="hist",
+        bins=20,
+        edgecolor="black",
+        ax=ax
+    )
 
+    ax.set_title("Rozkład wieku pacjentów")
+    ax.set_xlabel("Wiek [lata]")
+    ax.set_ylabel("Liczba zgłoszeń")
+
+    fig.tight_layout()
+
+    return fig
 
 def plot_sex_bar(grupa_patient_sex):
-    plt.figure(figsize=(8, 6))
-    grupa_patient_sex.plot(kind="bar", edgecolor="black", color="green")
-    plt.title("Liczba zgłoszeń według płci")
-    plt.xlabel("Płeć")
-    plt.ylabel("Ilość zgłoszeń")
+    fig, ax = plt.subplots(figsize=(8, 6))
 
-    plt.show()
+    grupa_patient_sex.plot(
+        kind="bar",
+        color="green",
+        edgecolor="black",
+        ax=ax
+    )
+
+    ax.set_title("Liczba zgłoszeń według płci")
+    ax.set_xlabel("Płeć")
+    ax.set_ylabel("Liczba zgłoszeń")
+    ax.tick_params(axis="x", rotation=0)
+
+    fig.tight_layout()
+
+    return fig
 
 def plot_substance_bar(grupa_subst):
-    grupa_subst.plot(kind="bar", figsize=(10, 6), color="purple", edgecolor="black")
-    plt.title("Liczba zgłoszeń według substancji czynnej")
-    plt.xlabel("Substancja czynna")
-    plt.ylabel("Liczba zgłoszeń")
-    plt.xticks(rotation=45)
-    plt.tight_layout()
+    fig, ax = plt.subplots(figsize=(10, 6))
 
-    plt.show()
+    grupa_subst.plot(
+        kind="bar",
+        edgecolor="black",
+        color="purple",
+        ax=ax
+    )
+
+    ax.set_title("Liczba zgłoszeń według substancji czynnej")
+    ax.set_xlabel("Substancja czynna")
+    ax.set_ylabel("Liczba zgłoszeń")
+    ax.tick_params(axis="x", rotation=45)
+
+    fig.tight_layout()
+
+    return fig
 
 
 def plot_age_weight(df_unique):
-    sns.scatterplot(data=df_unique, x="age_years", y="patient_weight_kg", alpha=0.3)
-    plt.title("Zależność wieku i masy ciała")
-    plt.xlabel("Wiek [lata]")
-    plt.ylabel("Masa ciała [kg]")
+    data = df_unique[
+        ["age_years", "patient_weight_kg"]
+    ].dropna()
 
-    plt.show()
+    fig, ax = plt.subplots(figsize=(10, 6))
 
+    sns.scatterplot(
+        data=data,
+        x="age_years",
+        y="patient_weight_kg",
+        ax=ax
+    )
+
+    ax.set_title("Zależność wieku i masy ciała")
+    ax.set_xlabel("Wiek [lata]")
+    ax.set_ylabel("Masa ciała [kg]")
+
+    fig.tight_layout()
+
+    return fig
 
 def plot_weight_by_sex(df_unique):
+    data = df_unique[
+        df_unique["patient_sex"].isin(["Female", "Male"])
+    ]
 
-    plt.figure(figsize=(6, 6))
+    fig, ax = plt.subplots(figsize=(8, 6))
 
-    sns.boxplot(data=df_unique[df_unique["patient_sex"].isin(["Female", "Male"])], x="patient_sex",
-                y="patient_weight_kg")
+    sns.boxplot(
+        data=data,
+        x="patient_sex",
+        y="patient_weight_kg",
+        ax=ax
+    )
 
-    plt.title("Rozkład masy ciała według płci")
-    plt.xlabel("Płeć")
-    plt.ylabel("Masa ciała [kg]")
+    ax.set_title("Rozkład masy ciała według płci")
+    ax.set_xlabel("Płeć")
+    ax.set_ylabel("Masa ciała [kg]")
 
-    plt.tight_layout()
-    plt.show()
+    fig.tight_layout()
+
+    return fig
