@@ -101,3 +101,26 @@ def plot_weight_by_sex(df_unique):
     fig.tight_layout()
 
     return fig
+
+def plot_top_reactions(df):
+    top_reactions = (
+        df["reaction"]
+        .value_counts()
+        .head(15)
+        .sort_values()
+    )
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    top_reactions.plot(
+        kind="barh",
+        edgecolor="black",
+        ax=ax
+    )
+
+    ax.set_title("15 najczęściej zgłaszanych działań niepożądanych")
+    ax.set_xlabel("Liczba zgłoszeń")
+    ax.set_ylabel("Działanie niepożądane")
+
+    fig.tight_layout()
+    return fig

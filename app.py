@@ -6,7 +6,8 @@ from visualizations import (
     plot_age_histogram,
     plot_weight_by_sex,
     plot_sex_bar,
-    plot_age_weight
+    plot_age_weight,
+    plot_top_reactions
 )
 
 # ==========================================
@@ -173,56 +174,42 @@ if wiek_min > wiek_max:
 # FILTROWANIE ZGŁOSZEŃ
 # ==========================================
 
-# Filtrowanie unikalnych zgłoszeń
-filtered_unique = df_unique.copy()
+def filtruj_dane(data):
+    wynik = data.copy()
 
-if wybrana_substancja != "Wszystkie":
-    filtered_unique = filtered_unique[
-        filtered_unique["generic_name"] == wybrana_substancja
+    if wybrana_substancja != "Wszystkie":
+        wynik = wynik[
+            wynik["generic_name"] == wybrana_substancja
+        ]
+
+    if plec != "Wszystkie":
+        wynik = wynik[
+            wynik["patient_sex"] == plec
+        ]
+
+    wynik = wynik[
+        (wynik["age_years"] >= wiek_min) &
+        (wynik["age_years"] <= wiek_max)
     ]
 
-if plec != "Wszystkie":
-    filtered_unique = filtered_unique[
-        filtered_unique["patient_sex"] == plec
-    ]
-
-filtered_unique = filtered_unique[
-    (filtered_unique["age_years"] >= wiek_min) &
-    (filtered_unique["age_years"] <= wiek_max)
-]
+    return wynik
 
 
-# Filtrowanie wszystkich działań niepożądanych
-filtered_df = df.copy()
-
-if wybrana_substancja != "Wszystkie":
-    filtered_df = filtered_df[
-        filtered_df["generic_name"] == wybrana_substancja
-    ]
-
-if plec != "Wszystkie":
-    filtered_df = filtered_df[
-        filtered_df["patient_sex"] == plec
-    ]
-
-filtered_df = filtered_df[
-    (filtered_df["age_years"] >= wiek_min) &
-    (filtered_df["age_years"] <= wiek_max)
-]
+filtered_df = filtruj_dane(df)
 
 if poważność == "Poważne":
     filtered_df = filtered_df[
         filtered_df["serious"] == True
     ]
 
-
-
 elif poważność == "Niepoważne":
     filtered_df = filtered_df[
         filtered_df["serious"] == False
     ]
 
-
+filtered_unique = filtered_df.drop_duplicates(
+    subset=["safetyreportid"]
+)
 
 # ==========================================
 # WYNIK FILTROWANIA
@@ -243,6 +230,10 @@ with col2:
         "Liczba działań niepożądanych",
         len(filtered_df)
     )
+
+if filtered_df.empty:
+    st.warning("Brak danych dla wybranych filtrów.")
+    st.stop()
 
 # ==========================================
 # STATYSTYKI DLA PRZEFILTROWANYCH DANYCH
@@ -286,14 +277,24 @@ with col3:
         )
 
 with col4:
-    liczba_powaznych = (
-        filtered_df["serious"] == True
-    ).sum()
 
-    st.metric(
-        "Poważne działania",
-        liczba_powaznych
-    )
+    if poważność == "Poważne":
+        st.metric(
+            "Liczba działań poważnych",
+            len(filtered_df)
+        )
+
+    elif poważność == "Niepoważne":
+        st.metric(
+            "Liczba działań niepoważnych",
+            len(filtered_df)
+        )
+
+    else:
+        st.metric(
+            "Liczba działań niepożądanych",
+            len(filtered_df)
+        )
 # ==========================================
 # DANE DO WYKRESU SUBSTANCJI
 # ==========================================
@@ -341,3 +342,8 @@ fig_sex = plot_sex_bar(
 )
 
 st.pyplot(fig_sex)
+
+st.subheader("15 najczęściej zgłaszanych działań niepożądanych")
+
+fig_top_reactions = plot_top_reactions(filtered_df)
+st.pyplot(fig_top_reactions)

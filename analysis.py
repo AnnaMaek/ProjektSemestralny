@@ -293,21 +293,3 @@ male_reaction = df[df["patient_sex"] == "Male"]["reaction"].value_counts()
 print("\nNajczęsciej występujące działania niepożądane u mężczyzn: ")
 print(male_reaction.head(20))
 
-from visualizations import (
-    plot_age_histogram,
-    plot_sex_bar,
-    plot_substance_bar,
-    plot_age_weight,
-    plot_weight_by_sex)
-
-# ---------------------- WIZUALIZACJE ----------------------
-
-plot_age_histogram(df_unique)
-
-plot_sex_bar(grupa_patient_sex)
-
-plot_substance_bar(grupa_subst)
-
-plot_age_weight(df_unique)
-
-plot_weight_by_sex(df_unique)
