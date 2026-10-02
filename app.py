@@ -32,6 +32,9 @@ st.write(
     "substancji czynnej i powagi działania."
 )
 
+tab_podsumowanie, tab_wizualizacje, tab_dane = st.tabs(
+    ["Podsumowanie", "Wizualizacje", "Dane"]
+)
 
 # ==========================================
 # WCZYTANIE DANYCH
@@ -84,31 +87,7 @@ df_unique = df.drop_duplicates(
 )
 
 
-# ==========================================
-# PODSTAWOWE INFORMACJE
-# ==========================================
 
-st.subheader("Podstawowe informacje")
-
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    st.metric(
-        "Liczba działań niepożądanych",
-        len(df)
-    )
-
-with col2:
-    st.metric(
-        "Liczba unikalnych zgłoszeń",
-        len(df_unique)
-    )
-
-with col3:
-    st.metric(
-        "Liczba substancji czynnych",
-        df_unique["generic_name"].nunique()
-    )
 
 # ==========================================
 # FILTRY
@@ -211,90 +190,113 @@ filtered_unique = filtered_df.drop_duplicates(
     subset=["safetyreportid"]
 )
 
-# ==========================================
-# WYNIK FILTROWANIA
-# ==========================================
-
-st.subheader("Wynik filtrowania")
-
-col1, col2 = st.columns(2)
-
-with col1:
-    st.metric(
-        "Liczba unikalnych zgłoszeń",
-        len(filtered_unique)
-    )
-
-with col2:
-    st.metric(
-        "Liczba działań niepożądanych",
-        len(filtered_df)
-    )
-
 if filtered_df.empty:
     st.warning("Brak danych dla wybranych filtrów.")
     st.stop()
 
 # ==========================================
-# STATYSTYKI DLA PRZEFILTROWANYCH DANYCH
+# PODSTAWOWE INFORMACJE
 # ==========================================
 
-st.subheader("Statystyki")
+with tab_podsumowanie:
+    st.subheader("Podstawowe informacje")
 
-col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3 = st.columns(3)
 
-with col1:
-    sredni_wiek = filtered_unique["age_years"].mean()
-
-    if pd.isna(sredni_wiek):
-        st.metric("Średni wiek", "Brak danych")
-    else:
+    with col1:
         st.metric(
-            "Średni wiek",
-            f"{sredni_wiek:.2f} lat"
+            "Liczba działań niepożądanych",
+            len(df)
         )
 
-with col2:
-    mediana_wieku = filtered_unique["age_years"].median()
-
-    if pd.isna(mediana_wieku):
-        st.metric("Mediana wieku", "Brak danych")
-    else:
+    with col2:
         st.metric(
-            "Mediana wieku",
-            f"{mediana_wieku:.2f} lat"
+            "Liczba unikalnych zgłoszeń",
+            len(df_unique)
         )
 
-with col3:
-    srednia_masa = filtered_unique["patient_weight_kg"].mean()
-
-    if pd.isna(srednia_masa):
-        st.metric("Średnia masa", "Brak danych")
-    else:
+    with col3:
         st.metric(
-            "Średnia masa",
-            f"{srednia_masa:.2f} kg"
+            "Liczba substancji czynnych",
+            df_unique["generic_name"].nunique()
         )
 
-with col4:
 
-    if poważność == "Poważne":
+    st.subheader("Wynik filtrowania")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
         st.metric(
-            "Liczba działań poważnych",
-            len(filtered_df)
+            "Liczba unikalnych zgłoszeń",
+            len(filtered_unique)
         )
 
-    elif poważność == "Niepoważne":
-        st.metric(
-            "Liczba działań niepoważnych",
-            len(filtered_df)
-        )
-
-    else:
+    with col2:
         st.metric(
             "Liczba działań niepożądanych",
             len(filtered_df)
         )
+
+
+
+
+    st.subheader("Statystyki")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        sredni_wiek = filtered_unique["age_years"].mean()
+
+        if pd.isna(sredni_wiek):
+            st.metric("Średni wiek", "Brak danych")
+        else:
+            st.metric(
+                "Średni wiek",
+                f"{sredni_wiek:.2f} lat"
+            )
+
+    with col2:
+        mediana_wieku = filtered_unique["age_years"].median()
+
+        if pd.isna(mediana_wieku):
+            st.metric("Mediana wieku", "Brak danych")
+        else:
+            st.metric(
+                "Mediana wieku",
+                f"{mediana_wieku:.2f} lat"
+            )
+
+    with col3:
+        srednia_masa = filtered_unique["patient_weight_kg"].mean()
+
+        if pd.isna(srednia_masa):
+            st.metric("Średnia masa", "Brak danych")
+        else:
+            st.metric(
+                "Średnia masa",
+                f"{srednia_masa:.2f} kg"
+            )
+
+    with col4:
+
+        if poważność == "Poważne":
+            st.metric(
+                "Liczba działań poważnych",
+                len(filtered_df)
+            )
+
+        elif poważność == "Niepoważne":
+            st.metric(
+                "Liczba działań niepoważnych",
+                len(filtered_df)
+            )
+
+        else:
+            st.metric(
+                "Liczba działań niepożądanych",
+                len(filtered_df)
+            )
 # ==========================================
 # DANE DO WYKRESU SUBSTANCJI
 # ==========================================
@@ -304,46 +306,71 @@ filtered_substances = (
     .value_counts()
 )
 # ==========================================
-# WYKRESY
+# WIZUALIZACJE
 # ==========================================
 
-st.subheader("Liczba zgłoszeń według substancji czynnej")
+with tab_wizualizacje:
 
-fig = plot_substance_bar(filtered_substances)
+    st.subheader("Liczba zgłoszeń według substancji czynnej")
 
-st.pyplot(fig)
+    fig = plot_substance_bar(filtered_substances)
 
+    st.pyplot(fig)
 
-st.subheader("Rozkład wieku pacjentów")
+    st.subheader("Analiza wieku i płci")
 
-fig_age = plot_age_histogram(filtered_unique)
-
-st.pyplot(fig_age)
-
-
-st.subheader("Rozkład masy ciała według płci")
-
-fig_weight = plot_weight_by_sex(filtered_unique)
-
-st.pyplot(fig_weight)
+    col1, col2 = st.columns(2)
 
 
-st.subheader("Zależność wieku i masy ciała")
+    with col1:
+        st.write("Rozkład wieku pacjentów")
 
-fig_scatter = plot_age_weight(filtered_unique)
+        fig_age = plot_age_histogram(filtered_unique)
 
-st.pyplot(fig_scatter)
+        st.pyplot(fig_age)
+
+    with col2:
+        st.write("Liczba zgłoszeń według płci")
+        fig_sex = plot_sex_bar(
+            filtered_unique["patient_sex"].value_counts()
+        )
+        st.pyplot(fig_sex)
 
 
-st.subheader("Liczba zgłoszeń według płci")
+    st.subheader("Analiza masy ciała")
 
-fig_sex = plot_sex_bar(
-    filtered_unique["patient_sex"].value_counts()
-)
+    col1, col2 = st.columns(2)
 
-st.pyplot(fig_sex)
+    with col1:
+        st.write("Zależność wieku i masy ciała")
 
-st.subheader("15 najczęściej zgłaszanych działań niepożądanych")
+        fig_scatter = plot_age_weight(filtered_unique)
 
-fig_top_reactions = plot_top_reactions(filtered_df)
-st.pyplot(fig_top_reactions)
+        st.pyplot(fig_scatter)
+
+    with col2:
+        st.write("Rozkład masy ciała według płci")
+
+        fig_weight = plot_weight_by_sex(filtered_unique)
+
+        st.pyplot(fig_weight)
+
+
+
+    st.subheader("15 najczęściej zgłaszanych działań niepożądanych")
+
+    fig_top_reactions = plot_top_reactions(filtered_df)
+    st.pyplot(fig_top_reactions)
+
+# ==========================================
+# DANE
+# ==========================================
+
+with tab_dane:
+
+    st.subheader("Przefiltrowane dane")
+
+    st.dataframe(
+        filtered_df,
+        use_container_width=True
+    )
