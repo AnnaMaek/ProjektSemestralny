@@ -29,7 +29,7 @@ st.title("Analiza działań niepożądanych leków z grupy GLP-1")
 st.write(
     "Aplikacja umożliwia analizę zgłoszonych działań "
     "niepożądanych z uwzględnieniem wieku, płci, "
-    "substancji czynnej i powagi działania."
+    "substancji czynnej, nazwy handlowej i powagi działania."
 )
 
 tab_podsumowanie, tab_wizualizacje, tab_dane = st.tabs(
@@ -106,7 +106,16 @@ wybrana_substancja = st.sidebar.selectbox(
     "Substancja czynna",
     ["Wszystkie"] + substancje
 )
+# Nazwa handlowa
 
+nazwy_handlowe = sorted(
+    df_unique["brand_queried"].dropna().unique()
+)
+
+wybrana_nazwa_handlowa = st.sidebar.selectbox(
+    "Nazwa handlowa",
+    ["Wszystkie"] + nazwy_handlowe
+)
 
 # Płeć
 
@@ -159,6 +168,11 @@ def filtruj_dane(data):
     if wybrana_substancja != "Wszystkie":
         wynik = wynik[
             wynik["generic_name"] == wybrana_substancja
+        ]
+
+    if wybrana_nazwa_handlowa != "Wszystkie":
+        wynik = wynik[
+            wynik["brand_queried"] == wybrana_nazwa_handlowa
         ]
 
     if plec != "Wszystkie":
@@ -385,4 +399,3 @@ with tab_dane:
         file_name="wyniki_filtrowania.csv",
         mime="text/csv"
     )
-    
