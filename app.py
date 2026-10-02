@@ -372,5 +372,17 @@ with tab_dane:
 
     st.dataframe(
         filtered_df,
-        use_container_width=True
+        width="stretch"
     )
+
+    csv = filtered_df.to_csv(
+        index=False
+    ).encode("UTF-8")
+
+    st.download_button(
+        label="Pobierz dane CSV",
+        data=csv,
+        file_name="wyniki_filtrowania.csv",
+        mime="text/csv"
+    )
+    
