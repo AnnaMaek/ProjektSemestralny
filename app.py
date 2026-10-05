@@ -88,7 +88,6 @@ df_unique = df.drop_duplicates(
 
 
 
-
 # ==========================================
 # FILTRY
 # ==========================================
@@ -96,28 +95,88 @@ df_unique = df.drop_duplicates(
 st.sidebar.header("Filtry")
 
 
-# Substancja czynna
 
-substancje = sorted(
-    df_unique["generic_name"].dropna().unique()
-)
+# SESSION STATE
+
+if "wybrana_substancja" not in st.session_state:
+    st.session_state["wybrana_substancja"] = "Wszystkie"
+
+if "wybrana_nazwa_handlowa" not in st.session_state:
+    st.session_state["wybrana_nazwa_handlowa"] = "Wszystkie"
+
+
+
+# LISTA SUBSTANCJI
+
+
+if st.session_state["wybrana_nazwa_handlowa"] == "Wszystkie":
+
+    substancje = sorted(
+        df_unique["generic_name"]
+        .dropna()
+        .unique()
+    )
+
+else:
+
+    substancje = sorted(
+        df_unique.loc[
+            df_unique["brand_queried"]
+            == st.session_state["wybrana_nazwa_handlowa"],
+            "generic_name"
+        ]
+        .dropna()
+        .unique()
+    )
+
+
+
+# ========== WYBÓR SUBSTANCJI ==========
+
 
 wybrana_substancja = st.sidebar.selectbox(
     "Substancja czynna",
-    ["Wszystkie"] + substancje
+    ["Wszystkie"] + substancje,
+    key="wybrana_substancja"
 )
-# Nazwa handlowa
 
-nazwy_handlowe = sorted(
-    df_unique["brand_queried"].dropna().unique()
-)
+
+
+# LISTA NAZW HANDLOWYCH
+
+
+if st.session_state["wybrana_substancja"] == "Wszystkie":
+
+    nazwy_handlowe = sorted(
+        df_unique["brand_queried"]
+        .dropna()
+        .unique()
+    )
+
+else:
+
+    nazwy_handlowe = sorted(
+        df_unique.loc[
+            df_unique["generic_name"]
+            == st.session_state["wybrana_substancja"],
+            "brand_queried"
+        ]
+        .dropna()
+        .unique()
+    )
+
+
+
+#  ========= WYBÓR NAZWY HANDLOWEJ =======
+
 
 wybrana_nazwa_handlowa = st.sidebar.selectbox(
     "Nazwa handlowa",
-    ["Wszystkie"] + nazwy_handlowe
+    ["Wszystkie"] + nazwy_handlowe,
+    key="wybrana_nazwa_handlowa"
 )
 
-# Płeć
+# ========== PŁEĆ ===========
 
 plec = st.sidebar.selectbox(
     "Płeć",
@@ -130,7 +189,7 @@ plec = st.sidebar.selectbox(
 )
 
 
-# Wiek
+# =========  WIEK =============
 
 wiek_min = st.sidebar.number_input(
     "Minimalny wiek",
