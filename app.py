@@ -204,6 +204,12 @@ wiek_max = st.sidebar.number_input(
     max_value=120,
     value=120
 )
+
+uwzglednij_brak_wieku = st.sidebar.checkbox(
+    "Uwzględnij zgłoszenia bez podanego wieku",
+    value = True
+)
+
 poważność = st.sidebar.selectbox(
     "Powaga działania niepożądanego",
     [
@@ -239,10 +245,17 @@ def filtruj_dane(data):
             wynik["patient_sex"] == plec
         ]
 
-    wynik = wynik[
+    zakres_wieku = (
         (wynik["age_years"] >= wiek_min) &
         (wynik["age_years"] <= wiek_max)
-    ]
+    )
+
+    if uwzglednij_brak_wieku:
+        wynik = wynik[
+            zakres_wieku | wynik["age_years"].isna()
+        ]
+    else:
+        wynik = wynik[zakres_wieku]
 
     return wynik
 
