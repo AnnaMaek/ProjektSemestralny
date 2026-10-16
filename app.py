@@ -324,6 +324,31 @@ with tab_podsumowanie:
             len(filtered_df)
         )
 
+    st.subheader("Opis analizy")
+
+    # Substancja czynna
+    if wybrana_substancja == "Wszystkie":
+        opis_substancji = "wszystkie substancje czynne"
+    else:
+        opis_substancji = wybrana_substancja
+
+    # Nazwa handlowa
+    if wybrana_nazwa_handlowa == "Wszystkie":
+        opis_nazwy_handlowej = "konkretna nazwa handlowa nie została wskazana"
+    else:
+        opis_nazwy_handlowej = wybrana_nazwa_handlowa
+
+    # Płeć
+    if plec == "Wszystkie":
+        opis_plci = "wszystkie kategorie płci"
+    elif plec == "Unknown":
+        opis_plci = "brak danych dotyczących płci"
+    elif plec == "Female":
+        opis_plci = "kobiety"
+    else:
+        plec == "Male":
+        opis_plci = "mężczyźni"
+
 
 
 
