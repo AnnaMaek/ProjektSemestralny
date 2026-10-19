@@ -346,8 +346,28 @@ with tab_podsumowanie:
     elif plec == "Female":
         opis_plci = "kobiety"
     else:
-        plec == "Male":
         opis_plci = "mężczyźni"
+
+    # Wiek
+    opis_wieku = f"f{wiek_min}-{wiek_max}"
+    if uwzglednij_brak_wieku:
+        opis_wieku += "oraz osoby bez podanego wieku"
+
+    # Poważność działania
+    if poważność == "Poważne":
+        opis_powagi = "działania niepożądane oznaczone jako poważne"
+    elif poważność == "Niepoważne":
+        opis_powagi = "działania niepożądane które nie zostały zakwalifikowane jako poważne"
+    else:
+        opis_powagi = "działania niepożądane o każdym stopniu nasilenia"
+
+    st.write(
+        f"Analiza obejmuje {opis_substancji}, "
+        f"nazwa(y) handlowa(e): {opis_nazwy_handlowej}, "
+        f"{opis_plci}, wiek: {opis_wieku}, "
+        f"Stopień nasilenia: {opis_powagi}. "
+
+    )
 
 
 
