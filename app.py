@@ -349,9 +349,9 @@ with tab_podsumowanie:
         opis_plci = "mężczyźni"
 
     # Wiek
-    opis_wieku = f"f{wiek_min}-{wiek_max}"
+    opis_wieku = f"{wiek_min}-{wiek_max}"
     if uwzglednij_brak_wieku:
-        opis_wieku += "oraz osoby bez podanego wieku"
+        opis_wieku += " oraz osoby bez podanego wieku"
 
     # Poważność działania
     if poważność == "Poważne":
@@ -365,7 +365,7 @@ with tab_podsumowanie:
         f"Analiza obejmuje {opis_substancji}, "
         f"nazwa(y) handlowa(e): {opis_nazwy_handlowej}, "
         f"{opis_plci}, wiek: {opis_wieku}, "
-        f"Stopień nasilenia: {opis_powagi}. "
+        f"stopień nasilenia: {opis_powagi}. "
 
     )
 
