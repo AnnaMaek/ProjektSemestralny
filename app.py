@@ -1,5 +1,37 @@
 import pandas as pd
 import streamlit as st
+from io import BytesIO
+from datetime import datetime
+from xml.sax.saxutils import escape
+
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Paragraph,
+    Spacer,
+    Table,
+    LongTable,
+    TableStyle
+)
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.pagesizes import A4, landscape
+from reportlab.lib.units import cm
+
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
+FONT_DIR = BASE_DIR / "fonts"
+
+pdfmetrics.registerFont(
+    TTFont("DejaVu", str(FONT_DIR / "DejaVuSans.ttf"))
+)
+
+pdfmetrics.registerFont(
+    TTFont("DejaVu-Bold", str(FONT_DIR / "DejaVuSans-Bold.ttf"))
+)
+
 
 from visualizations import (
     plot_substance_bar,
@@ -9,6 +41,130 @@ from visualizations import (
     plot_age_weight,
     plot_top_reactions
 )
+
+
+def generuj_pdf_podsumowanie(filtry, statystyki, reakcje):
+    buffer = BytesIO()
+
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        rightMargin=2 * cm,
+        leftMargin=2 * cm,
+        topMargin=2 * cm,
+        bottomMargin=2 * cm
+    )
+
+    styles = getSampleStyleSheet()
+
+    styles["Normal"].fontName = "DejaVu"
+    styles["Title"].fontName = "DejaVu-Bold"
+    styles["Heading1"].fontName = "DejaVu-Bold"
+    styles["Heading2"].fontName = "DejaVu-Bold"
+    styles["Heading3"].fontName = "DejaVu-Bold"
+
+    elements = []
+
+    elements.append(
+        Paragraph(
+            "Raport z analizy działań niepożądanych leków GLP-1",
+            styles["Title"]
+        )
+    )
+
+    elements.append(Spacer(1, 10))
+
+    elements.append(
+        Paragraph(
+            f"Data wygenerowania: {datetime.now():%Y-%m-%d %H:%M}",
+            styles["Normal"]
+        )
+    )
+
+    elements.append(Spacer(1, 20))
+
+    # ZASTOSOWANE FILTRY
+    elements.append(
+        Paragraph("1. Zastosowane filtry", styles["Heading2"])
+    )
+
+    for nazwa, wartosc in filtry.items():
+        elements.append(
+            Paragraph(
+                f"<b>{escape(str(nazwa))}:</b> "
+                f"{escape(str(wartosc))}",
+                styles["Normal"]
+            )
+        )
+
+    elements.append(Spacer(1, 18))
+
+    # STATYSTYKI
+    elements.append(
+        Paragraph("2. Wynik filtrowania i statystyki", styles["Heading2"])
+    )
+
+    tabela_statystyk = [
+        ["Wskaźnik", "Wartość"]
+    ]
+
+    # Nagłówki drukowanymi literami
+    dane_tabeli = [
+        ["NAZWA STATYSTYKI", "WARTOŚĆ"],
+    ]
+
+    for nazwa, wartosc in statystyki.items():
+        dane_tabeli.append([nazwa, str(wartosc)])
+
+    tabela = Table(dane_tabeli, colWidths=[9 * cm, 7 * cm])
+
+    tabela.setStyle(TableStyle([
+        # Jasne tło nagłówka i czarny tekst
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#E8EEF5")),
+        ("TEXTCOLOR", (0, 0), (-1, -1), colors.black),
+
+        # Czcionka obsługująca polskie znaki — także w tabeli
+        ("FONTNAME", (0, 0), (-1, -1), "DejaVu"),
+        ("FONTNAME", (0, 0), (-1, 0), "DejaVu-Bold"),
+
+        ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("ROWBACKGROUNDS", (0, 1), (-1, -1),
+         [colors.white, colors.whitesmoke]),
+        ("PADDING", (0, 0), (-1, -1), 7),
+    ]))
+
+    elements.append(tabela)
+    elements.append(Spacer(1, 18))
+
+    # NAJCZĘSTSZE DZIAŁANIA NIEPOŻĄDANE
+    elements.append(
+        Paragraph(
+            "3. 15 najczęściej zgłaszanych działań niepożądanych",
+            styles["Heading2"]
+        )
+    )
+
+    if reakcje.empty:
+        elements.append(
+            Paragraph(
+                "Brak danych o działaniach niepożądanych.",
+                styles["Normal"]
+            )
+        )
+    else:
+        for i, (nazwa, liczba) in enumerate(reakcje.items(), start=1):
+            elements.append(
+                Paragraph(
+                    f"{i}. {escape(str(nazwa))} — {liczba} wystąpień",
+                    styles["Normal"]
+                )
+            )
+
+    doc.build(elements)
+
+    return buffer.getvalue()
+
 
 # ==========================================
 # KONFIGURACJA APLIKACJI
@@ -454,6 +610,59 @@ with tab_podsumowanie:
         else:
             for reakcja, liczba in top10_reactions.items():
                 st.write(f"- {reakcja}  -  {liczba} ")
+
+    # ==========================================
+    # POBIERANIE RAPORTU PDF
+    # ==========================================
+
+    st.divider()
+    st.subheader("📄 Pobierz raport podsumowujący")
+
+    filtry_pdf = {
+        "Substancja czynna": opis_substancji,
+        "Nazwa handlowa": opis_nazwy_handlowej,
+        "Płeć": opis_plci,
+        "Wiek": opis_wieku,
+        "Powaga działania": opis_powagi
+    }
+
+    sredni_wiek_pdf = filtered_unique["age_years"].mean()
+    mediana_wieku_pdf = filtered_unique["age_years"].median()
+    srednia_masa_pdf = filtered_unique["patient_weight_kg"].mean()
+
+    statystyki_pdf = {
+        "Liczba działań niepożądanych": len(filtered_df),
+        "Liczba unikalnych zgłoszeń": len(filtered_unique),
+        "Średni wiek": (
+            f"{sredni_wiek_pdf:.2f} lat"
+            if pd.notna(sredni_wiek_pdf)
+            else "Brak danych"
+        ),
+        "Mediana wieku": (
+            f"{mediana_wieku_pdf:.2f} lat"
+            if pd.notna(mediana_wieku_pdf)
+            else "Brak danych"
+        ),
+        "Średnia masa ciała": (
+            f"{srednia_masa_pdf:.2f} kg"
+            if pd.notna(srednia_masa_pdf)
+            else "Brak danych"
+        ),
+    }
+
+    pdf = generuj_pdf_podsumowanie(
+        filtry=filtry_pdf,
+        statystyki=statystyki_pdf,
+        reakcje=top10_reactions
+    )
+
+    st.download_button(
+        label="📄 Pobierz raport PDF",
+        data=pdf,
+        file_name="podsumowanie_glp1.pdf",
+        mime="application/pdf",
+        key="pobierz_pdf_podsumowanie"
+    )
 
 # ==========================================
 # DANE DO WYKRESU SUBSTANCJI
