@@ -285,7 +285,9 @@ if filtered_df.empty:
 # ==========================================
 
 with tab_podsumowanie:
-    st.subheader("Podstawowe informacje")
+
+    st.markdown("## 📊 Podstawowe informacje")
+
 
     col1, col2, col3 = st.columns(3)
 
@@ -307,127 +309,152 @@ with tab_podsumowanie:
             df_unique["generic_name"].nunique()
         )
 
+    st.divider()
 
-    st.subheader("Wynik filtrowania")
+    with st.container(border=True):
 
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.metric(
-            "Liczba unikalnych zgłoszeń",
-            len(filtered_unique)
-        )
-
-    with col2:
-        st.metric(
-            "Liczba działań niepożądanych",
-            len(filtered_df)
-        )
-
-    st.subheader("Opis analizy")
-
-    # Substancja czynna
-    if wybrana_substancja == "Wszystkie":
-        opis_substancji = "wszystkie substancje czynne"
-    else:
-        opis_substancji = wybrana_substancja
-
-    # Nazwa handlowa
-    if wybrana_nazwa_handlowa == "Wszystkie":
-        opis_nazwy_handlowej = "konkretna nazwa handlowa nie została wskazana"
-    else:
-        opis_nazwy_handlowej = wybrana_nazwa_handlowa
-
-    # Płeć
-    if plec == "Wszystkie":
-        opis_plci = "wszystkie kategorie płci"
-    elif plec == "Unknown":
-        opis_plci = "brak danych dotyczących płci"
-    elif plec == "Female":
-        opis_plci = "kobiety"
-    else:
-        opis_plci = "mężczyźni"
-
-    # Wiek
-    opis_wieku = f"{wiek_min}-{wiek_max}"
-    if uwzglednij_brak_wieku:
-        opis_wieku += " oraz osoby bez podanego wieku"
-
-    # Poważność działania
-    if poważność == "Poważne":
-        opis_powagi = "działania niepożądane oznaczone jako poważne"
-    elif poważność == "Niepoważne":
-        opis_powagi = "działania niepożądane które nie zostały zakwalifikowane jako poważne"
-    else:
-        opis_powagi = "działania niepożądane o każdym stopniu nasilenia"
-
-    st.write(
-        f"Analiza obejmuje {opis_substancji}, "
-        f"nazwa(y) handlowa(e): {opis_nazwy_handlowej}, "
-        f"{opis_plci}, wiek: {opis_wieku}, "
-        f"stopień nasilenia: {opis_powagi}. "
-
-    )
+        st.markdown("## 🎯 Wynik filtrowania")
 
 
+        col1, col2 = st.columns(2)
 
-
-    st.subheader("Statystyki")
-
-    col1, col2, col3, col4 = st.columns(4)
-
-    with col1:
-        sredni_wiek = filtered_unique["age_years"].mean()
-
-        if pd.isna(sredni_wiek):
-            st.metric("Średni wiek", "Brak danych")
-        else:
+        with col1:
             st.metric(
-                "Średni wiek",
-                f"{sredni_wiek:.2f} lat"
+                "Liczba unikalnych zgłoszeń",
+                len(filtered_unique)
             )
 
-    with col2:
-        mediana_wieku = filtered_unique["age_years"].median()
-
-        if pd.isna(mediana_wieku):
-            st.metric("Mediana wieku", "Brak danych")
-        else:
-            st.metric(
-                "Mediana wieku",
-                f"{mediana_wieku:.2f} lat"
-            )
-
-    with col3:
-        srednia_masa = filtered_unique["patient_weight_kg"].mean()
-
-        if pd.isna(srednia_masa):
-            st.metric("Średnia masa", "Brak danych")
-        else:
-            st.metric(
-                "Średnia masa",
-                f"{srednia_masa:.2f} kg"
-            )
-
-    with col4:
-
-        if poważność == "Poważne":
-            st.metric(
-                "Liczba działań poważnych",
-                len(filtered_df)
-            )
-
-        elif poważność == "Niepoważne":
-            st.metric(
-                "Liczba działań niepoważnych",
-                len(filtered_df)
-            )
-
-        else:
+        with col2:
             st.metric(
                 "Liczba działań niepożądanych",
                 len(filtered_df)
             )
+
+        st.divider()
+
+        st.subheader("Opis zastosowanych filtrów")
+
+        # Substancja czynna
+        if wybrana_substancja == "Wszystkie":
+            opis_substancji = "wszystkie substancje czynne"
+        else:
+            opis_substancji = wybrana_substancja
+
+        # Nazwa handlowa
+        if wybrana_nazwa_handlowa == "Wszystkie":
+            opis_nazwy_handlowej = "konkretna nazwa handlowa nie została wskazana"
+        else:
+            opis_nazwy_handlowej = wybrana_nazwa_handlowa
+
+        # Płeć
+        if plec == "Wszystkie":
+            opis_plci = "wszystkie kategorie płci"
+        elif plec == "Unknown":
+            opis_plci = "brak danych dotyczących płci"
+        elif plec == "Female":
+            opis_plci = "kobiety"
+        else:
+            opis_plci = "mężczyźni"
+
+        # Wiek
+        opis_wieku = f"{wiek_min}-{wiek_max}"
+        if uwzglednij_brak_wieku:
+            opis_wieku += " oraz osoby bez podanego wieku"
+
+        # Poważność działania
+        if poważność == "Poważne":
+            opis_powagi = "działania niepożądane oznaczone jako poważne"
+        elif poważność == "Niepoważne":
+            opis_powagi = "działania niepożądane które nie zostały zakwalifikowane jako poważne"
+        else:
+            opis_powagi = "działania niepożądane o każdym stopniu nasilenia"
+
+        st.write(
+            f"Analiza obejmuje {opis_substancji}, "
+            f"nazwa(y) handlowa(e): {opis_nazwy_handlowej}, "
+            f"{opis_plci}, wiek: {opis_wieku}, "
+            f"stopień nasilenia: {opis_powagi}. "
+
+        )
+        st.divider()
+
+
+
+        st.subheader("Statystyki")
+
+        col1, col2, col3, col4 = st.columns(4)
+
+        with col1:
+            sredni_wiek = filtered_unique["age_years"].mean()
+
+            if pd.isna(sredni_wiek):
+                st.metric("Średni wiek", "Brak danych")
+            else:
+                st.metric(
+                    "Średni wiek",
+                    f"{sredni_wiek:.2f} lat"
+                )
+
+        with col2:
+            mediana_wieku = filtered_unique["age_years"].median()
+
+            if pd.isna(mediana_wieku):
+                st.metric("Mediana wieku", "Brak danych")
+            else:
+                st.metric(
+                    "Mediana wieku",
+                    f"{mediana_wieku:.2f} lat"
+                )
+
+        with col3:
+            srednia_masa = filtered_unique["patient_weight_kg"].mean()
+
+            if pd.isna(srednia_masa):
+                st.metric("Średnia masa", "Brak danych")
+            else:
+                st.metric(
+                    "Średnia masa",
+                    f"{srednia_masa:.2f} kg"
+                )
+
+        with col4:
+
+            if poważność == "Poważne":
+                st.metric(
+                    "Liczba działań poważnych",
+                    len(filtered_df)
+                )
+
+            elif poważność == "Niepoważne":
+                st.metric(
+                    "Liczba działań niepoważnych",
+                    len(filtered_df)
+                )
+
+            else:
+                st.metric(
+                    "Liczba działań niepożądanych",
+                    len(filtered_df)
+                )
+
+        st.divider()
+
+        st.subheader("15 najczęściej zgłaszanych działań niepożądanych - liczba wystąpień:")
+
+        top10_reactions = (
+            filtered_df["reaction"]
+            .dropna()
+            .value_counts()
+            .head(15)
+        )
+
+        if top10_reactions.empty:
+            st.write("Brak danych o działaniach niepożądanych.")
+
+        else:
+            for reakcja, liczba in top10_reactions.items():
+                st.write(f"- {reakcja}  -  {liczba} ")
+
 # ==========================================
 # DANE DO WYKRESU SUBSTANCJI
 # ==========================================
