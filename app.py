@@ -442,6 +442,16 @@ filtered_substances = (
 
 with tab_wizualizacje:
 
+    st.write(
+        f"Wykresy utworzone są na podstawie wskazanych danych: "
+        f"{opis_substancji}, "
+        f"nazwa(y) handlowa(e): {opis_nazwy_handlowej}, "
+        f"{opis_plci}, wiek: {opis_wieku}, "
+        f"stopień nasilenia: {opis_powagi}. "
+
+    )
+
+
     st.subheader("Liczba zgłoszeń według substancji czynnej")
 
     fig = plot_substance_bar(filtered_substances)
