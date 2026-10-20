@@ -104,9 +104,6 @@ def generuj_pdf_podsumowanie(filtry, statystyki, reakcje):
         Paragraph("2. Wynik filtrowania i statystyki", styles["Heading2"])
     )
 
-    tabela_statystyk = [
-        ["Wskaźnik", "Wartość"]
-    ]
 
     # Nagłówki drukowanymi literami
     dane_tabeli = [
