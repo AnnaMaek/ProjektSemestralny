@@ -728,7 +728,7 @@ with tab_wizualizacje:
     st.write(
         f"Wykresy utworzone są na podstawie wskazanych danych: "
         f"{opis_substancji}, "
-        f"nazwa(y) handlowa(e): {opis_nazwy_handlowej}, "
+        f"nazwa handlowa: {opis_nazwy_handlowej}, "
         f"{opis_plci}, wiek: {opis_wieku}, "
         f"stopień nasilenia: {opis_powagi}. "
 
