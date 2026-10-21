@@ -168,7 +168,7 @@ def generuj_pdf_podsumowanie(filtry, statystyki, reakcje):
 # ==========================================
 
 st.set_page_config(
-    page_title="Analiza działań niepożądanych GLP-1",
+    page_title="Analiza działań niepożądanych leków z grupy GLP-1",
     layout="wide"
 )
 
@@ -257,7 +257,50 @@ if "wybrana_substancja" not in st.session_state:
 if "wybrana_nazwa_handlowa" not in st.session_state:
     st.session_state["wybrana_nazwa_handlowa"] = "Wszystkie"
 
+def zmiana_nazwy_handlowej():
+    marka = st.session_state["wybrana_nazwa_handlowa"]
 
+    if marka == "Wszystkie":
+        st.session_state["wybrana_substancja"] = "Wszystkie"
+        return
+
+    pasujace_substancje = (
+        df_unique.loc[
+            df_unique["brand_queried"] == marka,
+            "generic_name"
+        ]
+        .dropna()
+        .unique()
+    )
+
+    if len(pasujace_substancje) == 1:
+        st.session_state["wybrana_substancja"] = pasujace_substancje[0]
+
+    elif st.session_state["wybrana_substancja"] not in pasujace_substancje:
+        st.session_state["wybrana_substancja"] = "Wszystkie"
+
+def zmiana_substancji():
+    substancja = st.session_state["wybrana_substancja"]
+    marka = st.session_state["wybrana_nazwa_handlowa"]
+
+    # Resetowanie nazwy handlowej, jeśli wybrano "Wszystkie" substancje.
+    if substancja == "Wszystkie":
+        st.session_state["wybrana_nazwa_handlowa"] = "Wszystkie"
+        return
+
+    # Pobieramy marki pasujące do wybranej substancji
+    pasujace_marki = (
+        df_unique.loc[
+            df_unique["generic_name"] == substancja,
+            "brand_queried"
+        ]
+        .dropna()
+        .unique()
+    )
+
+    # Jeśli aktualna marka nie pasuje do substancji, ustawiamy nazwę handlową na "Wszystkie"
+    if marka not in pasujace_marki:
+        st.session_state["wybrana_nazwa_handlowa"] = "Wszystkie"
 
 # LISTA SUBSTANCJI
 
@@ -290,7 +333,8 @@ else:
 wybrana_substancja = st.sidebar.selectbox(
     "Substancja czynna",
     ["Wszystkie"] + substancje,
-    key="wybrana_substancja"
+    key="wybrana_substancja",
+    on_change=zmiana_substancji
 )
 
 
@@ -326,7 +370,9 @@ else:
 wybrana_nazwa_handlowa = st.sidebar.selectbox(
     "Nazwa handlowa",
     ["Wszystkie"] + nazwy_handlowe,
-    key="wybrana_nazwa_handlowa"
+    key="wybrana_nazwa_handlowa",
+    on_change=zmiana_nazwy_handlowej
+
 )
 
 # ========== PŁEĆ ===========
@@ -464,6 +510,7 @@ with tab_podsumowanie:
 
     st.divider()
 
+    # wizualne oddzielenie wyników filtrowania i statystyk od podstawowych informacji
     with st.container(border=True):
 
         st.markdown("## 🎯 Wynik filtrowania")
@@ -499,6 +546,7 @@ with tab_podsumowanie:
         else:
             opis_nazwy_handlowej = wybrana_nazwa_handlowa
 
+
         # Płeć
         if plec == "Wszystkie":
             opis_plci = "wszystkie kategorie płci"
@@ -513,6 +561,8 @@ with tab_podsumowanie:
         opis_wieku = f"{wiek_min}-{wiek_max}"
         if uwzglednij_brak_wieku:
             opis_wieku += " oraz osoby bez podanego wieku"
+        else:
+            opis_wieku += ", zgłoszenia bez podanego wieku nie są uwzględnione w analizie"
 
         # Poważność działania
         if poważność == "Poważne":
@@ -524,7 +574,7 @@ with tab_podsumowanie:
 
         st.write(
             f"Analiza obejmuje {opis_substancji}, "
-            f"nazwa(y) handlowa(e): {opis_nazwy_handlowej}, "
+            f"nazwa handlowa: {opis_nazwy_handlowej}, "
             f"{opis_plci}, wiek: {opis_wieku}, "
             f"stopień nasilenia: {opis_powagi}. "
 
