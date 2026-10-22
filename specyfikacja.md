@@ -68,6 +68,7 @@ Zastosowanie filtrów wpływa na wyniki prezentowane we wszystkich zakładkach:
 
 6. Zakładka "Podsumowanie"
 
+
 Zakładka "Podsumowanie" zawiera podstawowe informacje o danych oraz wyniki analizy po zastosowaniu filtrów.
 
 W pierwszej części prezentowane są:
