@@ -39,7 +39,7 @@ Sklonuj repozytorium i przejdź do katalogu projektu.
 
 ```bash
 git clone https://github.com/AnnaMaek/ProjektSemestralny.git
-cd PythonProject2
+cd ProjektSemestralny
 ```
 
 
