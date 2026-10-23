@@ -573,7 +573,10 @@ with tab_podsumowanie:
             opis_powagi = "działania niepożądane o każdym stopniu nasilenia"
 
         st.write(
-            f"Analiza obejmuje {opis_substancji}, "
+            f"Dane wykorzystane do przeprowadzenia analizy:"
+        )
+        st.write(
+            f"Substancja czynna: {opis_substancji}, "
             f"nazwa handlowa: {opis_nazwy_handlowej}, "
             f"{opis_plci}, wiek: {opis_wieku}, "
             f"stopień nasilenia: {opis_powagi}. "
@@ -727,7 +730,9 @@ with tab_wizualizacje:
 
     st.write(
         f"Wykresy utworzone są na podstawie wskazanych danych: "
-        f"{opis_substancji}, "
+    )
+    st.write(
+        f"substancja czynna: {opis_substancji}, "
         f"nazwa handlowa: {opis_nazwy_handlowej}, "
         f"{opis_plci}, wiek: {opis_wieku}, "
         f"stopień nasilenia: {opis_powagi}. "
